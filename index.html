@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #222222;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background:linear-gradient(to bottom, white, #6ccbdc, rgb(15, 131, 233));
+      padding: 14rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 300px;
+      width: 500%;
+    }
+
+    .container{
+  margin: 0 auto;
+  padding: 2em;
+  width: 300px;
+  text-align: center;
+  border-radius: 10px;
+  position: relative;
+}
+
+@property --angle{
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.container::after, .container::before{
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-image: conic-gradient(from var(--angle), rgba(255, 210, 43), rgba(255,133,3), rgba(213,14,1));
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  padding: 11px;
+  border-radius: 10px;
+  animation: 7s spin linear infinite;
+}
+.container::before{
+  filter: blur(2.5rem);
+  opacity: 0.7;
+}
+@keyframes spin{
+  from{
+    --angle: 0deg;
+  }
+  to{
+    --angle: 360deg;
+  }
+}
+
+    input {
+      width: 100%;
+      padding: 0.4rem;
+      margin-bottom: 1rem;
+      border: 3px solid #6bd5f0;
+      border-radius: 5px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      border: 2px solid #c6dbe0;
+      background-color: #e45d0f;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Weather App</h2>
+    <input type="text" id="locationInput" placeholder="Enter a location">
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="result" id="weatherResult"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const location = document.getElementById('locationInput').value;
+      const apiKey = '9cd51fa43dba432893073118252104';
+      const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=yes`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Location not found');
+        }
+        const data = await response.json();
+        const tempC = data.current.temp_c;
+        const condition = data.current.condition.text;
+        const city = data.location.name;
+
+        document.getElementById('weatherResult').innerHTML = `
+          <h3>${city}</h3>
+          <p>Temperature: ${tempC} °C</p>
+          <p>Condition: ${condition}</p>
+        `;
+      } catch (error) {
+        document.getElementById('weatherResult').innerHTML = `<p style="color: red;">${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
